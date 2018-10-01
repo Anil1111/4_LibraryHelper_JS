@@ -1,7 +1,7 @@
 $(function () {
     const apiURL = "http://localhost:50956/api/";
 
-    ajaxGetAllBooks();
+    GetAllBooks();
 
     var addButton = $("#form-add-button");
 
@@ -17,12 +17,12 @@ $(function () {
         }
 
         if ($(this).text() == "Dodaj") {
-            ajaxAddNewBook(newBook);
+            AddNewBook(newBook);
         }
 
     });
 
-    function ajaxGetAllBooks() {
+    function GetAllBooks() {
         $.ajax({
             url: apiURL + "books/"
         }).done(function (resp) {
@@ -32,14 +32,14 @@ $(function () {
         })
     };
 
-    function ajaxAddNewBook(newBook) {
+    function AddNewBook(newBook) {
         $.ajax({
             url: apiURL + "books",
             type: "POST",
             dataType: "json",
             data: newBook
         }).done(function () {
-            ajaxGetAllBooks();
+            GetAllBooks();
         }).fail(function (err) {
         })
     };
@@ -69,4 +69,21 @@ $(function () {
             booksTable.append(newRow);
         }
     }
+
+
+    $('#booksTable').on("click", "button.deleteBook", function () {
+        var bookID = $(this).closest("tr[data-book-id]").attr("data-book-id");
+        RemoveBook(bookID);
+    });
+
+    function RemoveBook(bookID) {
+        $.ajax({
+            url: apiURL + "books/" + bookID,
+            type: "DELETE",
+        }).done(function () {
+            GetAllBooks();
+        }).fail(function (err) {
+        });
+    };
+
 });
