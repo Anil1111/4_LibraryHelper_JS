@@ -31,4 +31,4 @@
 </br>
 <h3>TODO:</h3> 
 <li> Add notification after actions. Actually app works well, but need some visual improvement. 
-<li>
+<li> Add validation for inputs</li>
