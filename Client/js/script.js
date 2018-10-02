@@ -418,7 +418,7 @@ $(function () {
         })
     };
 
-    function RenderAllLends(lends){
+    function RenderAllLends(lends) {
 
         var lendsTable = $("#lendTable").find("tbody");
 
@@ -463,20 +463,5 @@ $(function () {
         }).fail(function (err) {
         });
     };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 });
