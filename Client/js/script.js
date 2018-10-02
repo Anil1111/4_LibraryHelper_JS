@@ -1,6 +1,8 @@
 $(function () {
     const apiURL = "http://localhost:50956/api/";
 
+    //////////////////// BOOK
+
     GetAllBooks();
 
     var addButton = $("#form-add-button");
@@ -26,7 +28,7 @@ $(function () {
         $.ajax({
             url: apiURL + "books/"
         }).done(function (books) {
-            functionRenderAllBooks(books);
+            RenderAllBooks(books);
         }).fail(function (err) {
         })
     };
@@ -43,7 +45,7 @@ $(function () {
         })
     };
 
-    function functionRenderAllBooks(books) {
+    function RenderAllBooks(books) {
         var booksTable = $("#booksTable").find("tbody");
 
         booksTable.html("");
@@ -167,7 +169,7 @@ $(function () {
     };
 
 
-    ///////////////////////////////////
+    /////////////////////////////////// READERS
 
     GetAllReaders();
 
@@ -194,7 +196,7 @@ $(function () {
         $.ajax({
             url: apiURL + "readers"
         }).done(function (readers) {
-            functionRenderAllReaders(readers);
+            RenderAllReaders(readers);
         }).fail(function (err) {
         })
     };
@@ -203,7 +205,6 @@ $(function () {
         $.ajax({
             url: apiURL + "readers",
             type: "POST",
-            dataType: "json",
             data: newReader
         }).done(function () {
             GetAllReaders();
@@ -211,16 +212,21 @@ $(function () {
         })
     };
 
-    function functionRenderAllReaders(readers) {
+    function RenderAllReaders(readers) {
+
         var readersTable = $("#readersTable").find("tbody");
 
         readersTable.html("");
 
         for (var i = 0; i < readers.length; i++) {
+
             var newRow = $("<tr data-reader-id=" + readers[i].ID + "></tr>");
             var nameCol = $("<td>").text(readers[i].Name);
+
             nameCol.appendTo(newRow);
+
             var ageCol = $("<td>").text(readers[i].Age);
+
             ageCol.appendTo(newRow);
 
             var buttons = $(`        
@@ -333,6 +339,143 @@ $(function () {
         readerName.val(" ");
         readerAge.val(" ");
     };
+
+
+    ///////////////////////////////// LENDS
+
+    GetAllLends();
+
+    $('#booksTable').on("click", "button.lendBook", function () {
+
+        var bookID = $(this).closest("tr[data-book-id]").attr("data-book-id");
+
+        $('#readersTable > tbody > tr > td > div > button.btn.btn-info.btn-sm.lendReader').removeClass('btn-info');
+        $('#readersTable > tbody > tr > td > div > button.btn.btn-sm.lendReader').addClass("btn-success");
+
+        $('#readersTable').on("click", "button.lendReader", function () {
+
+            var readerID = $(this).closest("tr[data-reader-id]").attr("data-reader-id");
+            var lendDate = getDate();
+
+            console.log("kliknieto button wypozycz uzytkownika o id " + readerID);
+            console.log("kliknieto button wypozycz ksiazki o id " + bookID);
+            console.log("Data " + lendDate);
+
+            $('#readersTable > tbody > tr > td > div > button.btn.btn-info.btn-sm.lendReader').removeClass('btn-success');
+            $('#readersTable > tbody > tr > td > div > button.btn.btn-sm.lendReader').addClass('btn-info');
+
+            var newLend = {
+                BookID: bookID,
+                ReaderID: readerID,
+                LendDate: lendDate
+            }
+
+            console.log(newLend);
+
+            AddNewLend(newLend);
+
+            event.preventDefault();
+        });
+    });
+
+    function getDate() {
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1;
+        var yyyy = today.getFullYear();
+
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+
+        today = dd + '/' + mm + '/' + yyyy;
+
+        return today;
+    }
+
+    function AddNewLend(newLend) {
+        $.ajax({
+            url: apiURL + "lend/",
+            type: "POST",
+            data: newLend
+        }).done(function () {
+            GetAllLends();
+        }).fail(function (err) {
+        })
+    };
+
+    function GetAllLends() {
+        $.ajax({
+            url: apiURL + "lend/"
+        }).done(function (lends) {
+            RenderAllLends(lends);
+        }).fail(function (err) {
+        })
+    };
+
+    function RenderAllLends(lends){
+
+        var lendsTable = $("#lendTable").find("tbody");
+
+        lendsTable.html("");
+
+        for (var i = 0; i < lends.length; i++) {
+            var newRow = $("<tr data-lend-id=" + lends[i].ID + "></tr>");
+            var titleCol = $("<td>").text(lends[i].Title);
+            titleCol.appendTo(newRow);
+            var nameCol = $("<td>").text(lends[i].Name);
+            nameCol.appendTo(newRow);
+
+            var dateString = lends[i].LendDate
+
+            var dateCol = $("<td>").text(dateString);
+            dateCol.appendTo(newRow);
+
+            var buttons = $(`        
+                    <td>
+                        <div class="button-group">
+                            <button class="btn btn-info btn-sm returnBook">Zwróć</button>
+                        </div>
+                    </td>)`);
+
+            newRow.append(buttons);
+            lendsTable.append(newRow);
+        }
+    }
+
+    $('#lendTable').on("click", "button.returnBook", function () {
+        event.preventDefault();
+        var lendID = $(this).closest("tr[data-lend-id]").attr("data-lend-id");
+        RemoveLend(lendID);
+    });
+
+    function RemoveLend(lendID) {
+        $.ajax({
+            url: apiURL + "lend/" + lendID,
+            type: "DELETE",
+        }).done(function () {
+            GetAllLends();
+        }).fail(function (err) {
+        });
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
