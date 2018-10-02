@@ -22,7 +22,7 @@
 <h2> Library Helper - Rest API + Javascript code that reads info form the API and manage Library. It is an AJAX app, where user dont see site reload during using app. </h2>
 
 <div>
-  Application functions:
+  <h3>Application functions:</h3>
   <ul>
     <li>Books - Add, Delete, Edit, Lend
     <li>Users - Add, Delete, Edit, Lend
